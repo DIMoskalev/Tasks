@@ -6,6 +6,7 @@ def lru_cache(*args, **kwargs):
     def decorator(func):
         cache = functools.lru_cache(*args, **kwargs)(func)
         return cache
+
     return decorator
 
 
@@ -24,7 +25,7 @@ def multiply(a: int, b: int) -> int:
     return a * b
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     assert summ(1, 2) == 3
     assert summ(3, 4) == 7
 
