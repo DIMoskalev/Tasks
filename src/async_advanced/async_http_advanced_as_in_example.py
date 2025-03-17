@@ -11,10 +11,12 @@ async def fetch_urls(file_path: str, result_json_file_path: str):
             try:
                 async with current_session.get(current_url, timeout=10) as response:
                     if response.status == 200:
-                        content = await response.json()
+                        content = await response.text() # как получать именно json ответ? если писать json, то падает с ошибкой mimeType
                         return {"url": current_url, "content": content}
-            except (aiohttp.ClientError, asyncio.TimeoutError):
-                return {"url": current_url, "message": "Invalid response"}
+            except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                # для отслеживания ошибок
+                # return {"url": current_url, "message": str(e)}
+                pass
 
     async with aiohttp.ClientSession() as session:
         with open(file_path, 'r') as f:
