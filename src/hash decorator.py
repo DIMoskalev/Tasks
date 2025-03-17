@@ -1,21 +1,35 @@
-import functools
 import unittest.mock
 
 
-def lru_cache(*args, **kwargs):
+def lru_cache(maxsize=128):
     def decorator(func):
-        cache = functools.lru_cache(*args, **kwargs)(func)
-        return cache
+        cache = {}
+
+        def wrapper(*args, **kwargs):
+            cache_key = args + tuple(kwargs.items())
+
+            if cache_key in cache:
+                return cache[cache_key]
+            else:
+                result = func(*args, **kwargs)
+                cache[cache_key] = result
+
+                if maxsize is not None and len(cache) > maxsize:
+                    first_key = next(iter(cache.keys()))
+                    cache.pop(first_key)
+                return result
+
+        return wrapper
 
     return decorator
 
 
-@lru_cache()
-def summ(a: int, b: int) -> int:
+@lru_cache
+def sum(a: int, b: int) -> int:
     return a + b
 
 
-@lru_cache()
+@lru_cache
 def sum_many(a: int, b: int, *, c: int, d: int) -> int:
     return a + b + c + d
 
@@ -26,8 +40,8 @@ def multiply(a: int, b: int) -> int:
 
 
 if __name__ == "__main__":
-    assert summ(1, 2) == 3
-    assert summ(3, 4) == 7
+    assert sum(1, 2) == 3
+    assert sum(3, 4) == 7
 
     assert multiply(1, 2) == 2
     assert multiply(3, 4) == 12
