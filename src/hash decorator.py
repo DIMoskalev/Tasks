@@ -14,7 +14,7 @@ def lru_cache(maxsize=128):
                 result = func(*args, **kwargs)
                 cache[cache_key] = result
 
-                if maxsize is not None and len(cache) > maxsize:
+                if len(cache) > maxsize:
                     first_key = next(iter(cache.keys()))
                     cache.pop(first_key)
                 return result
