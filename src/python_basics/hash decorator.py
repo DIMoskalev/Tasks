@@ -1,10 +1,10 @@
 import unittest.mock
 
 
-def lru_cache(maxsize=128):
-    def decorator(func):
-        cache = {}
+def lru_cache(func=None, maxsize=None):
+    cache = {}
 
+    def decorator(func):
         def wrapper(*args, **kwargs):
             cache_key = args + tuple(kwargs.items())
 
@@ -14,14 +14,15 @@ def lru_cache(maxsize=128):
                 result = func(*args, **kwargs)
                 cache[cache_key] = result
 
-                if len(cache) > maxsize:
+                if maxsize is not None and len(cache) > maxsize:
                     first_key = next(iter(cache.keys()))
                     cache.pop(first_key)
+
                 return result
 
         return wrapper
 
-    return decorator
+    return decorator(func) if func else decorator
 
 
 @lru_cache
